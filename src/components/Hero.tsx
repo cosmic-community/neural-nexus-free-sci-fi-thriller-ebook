@@ -2,7 +2,7 @@ import { BookDetails, SiteSettings } from '@/lib/cosmic'
 import { ThemeToggle } from './ThemeToggle'
 import { DonateButton } from './DonateButton'
 import { SocialShare } from './SocialShare'
-import { Download, Star, Users, Clock } from 'lucide-react'
+import { Download, Star, Users, Clock, BookOpen, ShoppingCart } from 'lucide-react'
 import Link from 'next/link'
 
 interface HeroProps {
@@ -44,15 +44,91 @@ export function Hero({ bookDetails, siteSettings }: HeroProps) {
 
         {/* Main Hero Content */}
         <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
-          {/* Left Column - Content */}
-          <div className="space-y-8">
+          {/* Left Column - Book Cover */}
+          <div className="relative lg:order-1 order-2">
+            <div className="relative group max-w-md mx-auto lg:mx-0">
+              {/* Book Cover with 3D Effect */}
+              <div className="relative">
+                {/* Book Shadow */}
+                <div className="absolute inset-0 bg-black/20 rounded-2xl blur-xl transform rotate-2 scale-105"></div>
+                
+                {/* Book Cover */}
+                <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-1 shadow-2xl">
+                  {bookDetails?.metadata?.cover_image ? (
+                    <img 
+                      src={`${bookDetails.metadata.cover_image.imgix_url}?w=800&h=1200&fit=crop&auto=format,compress`}
+                      alt={bookDetails.metadata.title}
+                      className="w-full h-auto rounded-xl shadow-inner"
+                    />
+                  ) : (
+                    <div className="aspect-[3/4] bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-6xl mb-4">📚</div>
+                        <p className="text-lg font-medium">Neural Nexus</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Book Spine Effect */}
+                <div className="absolute -right-2 top-2 bottom-2 w-6 bg-gradient-to-r from-slate-700 to-slate-800 rounded-r-lg shadow-lg"></div>
+                
+                {/* Free Badge */}
+                <div className="absolute -top-3 -right-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full shadow-lg transform rotate-12">
+                  <span className="font-bold text-sm">FREE</span>
+                </div>
+              </div>
+              
+              {/* Pricing Options */}
+              <div className="mt-8 space-y-3">
+                <div className="bg-card/80 backdrop-blur-sm rounded-xl p-4 border border-green-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <BookOpen className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div>
+                        <div className="font-semibold">Digital Ebook</div>
+                        <div className="text-sm text-muted-foreground">Read online or download</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-green-600">FREE</div>
+                      <div className="text-xs text-muted-foreground">PDF, EPUB</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-card/80 backdrop-blur-sm rounded-xl p-4 border border-blue-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <ShoppingCart className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <div className="font-semibold">Print on Demand</div>
+                        <div className="text-sm text-muted-foreground">Physical paperback copy</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-blue-600">$10</div>
+                      <div className="text-xs text-muted-foreground">Paperback</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Content */}
+          <div className="space-y-8 lg:order-2 order-1">
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-primary font-medium">
                 <Star className="w-4 h-4" />
                 <span>Free Sci-Fi Thriller</span>
               </div>
               
-              <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
+              <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
                 <span className="gradient-text">
                   {bookDetails?.metadata?.title || 'Neural Nexus'}
                 </span>
@@ -82,13 +158,18 @@ export function Hero({ bookDetails, siteSettings }: HeroProps) {
                 href="#chapters"
                 className="flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all duration-300 btn-hover font-semibold"
               >
-                Start Reading
+                <BookOpen className="w-5 h-5" />
+                Start Reading Free
               </Link>
               
+              <button className="flex items-center gap-2 px-8 py-4 border border-primary text-primary rounded-xl hover:bg-primary/10 transition-all duration-300 btn-hover font-semibold">
+                <Download className="w-5 h-5" />
+                Download PDF
+              </button>
+              
               {bookDetails?.metadata?.enable_tts && (
-                <button className="flex items-center gap-2 px-8 py-4 border border-primary text-primary rounded-xl hover:bg-primary/10 transition-all duration-300 btn-hover font-semibold">
-                  <Download className="w-5 h-5" />
-                  Listen Now
+                <button className="flex items-center gap-2 px-8 py-4 border border-muted-foreground/30 text-muted-foreground rounded-xl hover:bg-muted/20 transition-all duration-300 btn-hover font-semibold">
+                  🎧 Listen Now
                 </button>
               )}
             </div>
@@ -108,32 +189,6 @@ export function Hero({ bookDetails, siteSettings }: HeroProps) {
                 <span>4.8/5 rating</span>
               </div>
             </div>
-          </div>
-
-          {/* Right Column - Book Cover */}
-          <div className="relative">
-            {bookDetails?.metadata?.cover_image ? (
-              <div className="relative group">
-                <div className="absolute inset-0 bg-primary/20 rounded-3xl blur-xl transform group-hover:scale-105 transition-transform duration-500"></div>
-                <img 
-                  src={`${bookDetails.metadata.cover_image.imgix_url}?w=600&h=800&fit=crop&auto=format,compress`}
-                  alt={bookDetails.metadata.title}
-                  className="relative w-full max-w-md mx-auto rounded-3xl shadow-2xl card-hover"
-                />
-                
-                {/* Floating Elements - Fixed positioning to prevent cropping */}
-                <div className="absolute -top-4 -right-2 w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-lg">
-                  <span className="text-primary-foreground font-bold text-sm">FREE</span>
-                </div>
-              </div>
-            ) : (
-              <div className="w-full max-w-md mx-auto aspect-[3/4] bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">📚</div>
-                  <p className="text-lg font-medium">Neural Nexus</p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
