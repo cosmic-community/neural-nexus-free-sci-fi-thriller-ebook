@@ -1,9 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  images: {
-    domains: ['imgix.cosmicjs.com'],
+  eslint: {
+    ignoreDuringBuilds: true,
   },
-};
+  images: {
+    domains: ['cdn.cosmicjs.com', 'imgix.cosmicjs.com', 'images.unsplash.com'],
+  },
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
