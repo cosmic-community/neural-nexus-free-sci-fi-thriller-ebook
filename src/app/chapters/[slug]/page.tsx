@@ -1,4 +1,4 @@
-import { getChapter, getChapters, getSiteSettings } from '@/lib/cosmic'
+import { getChapterBySlug, getChapters, getSiteSettings } from '@/lib/cosmic'
 import { ChapterReader } from '@/components/ChapterReader'
 import { ChapterNavigation } from '@/components/ChapterNavigation'
 import { notFound } from 'next/navigation'
@@ -12,7 +12,7 @@ interface ChapterPageProps {
 export default async function ChapterPage({ params }: ChapterPageProps) {
   const { slug } = await params
   const [chapter, allChapters, siteSettings] = await Promise.all([
-    getChapter(slug),
+    getChapterBySlug(slug),
     getChapters(),
     getSiteSettings()
   ])
