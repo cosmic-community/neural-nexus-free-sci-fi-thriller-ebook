@@ -1,3 +1,4 @@
+// src/app/chapters/[slug]/page.tsx
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { cosmic, getBookDetails, getSiteSettings } from '@/lib/cosmic'
