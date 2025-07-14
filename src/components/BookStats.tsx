@@ -1,5 +1,5 @@
 import { BookDetails, Chapter } from '@/lib/cosmic'
-import { BookOpen, Clock, Volume2, Users, Star, Download } from 'lucide-react'
+import { Book, Clock, FileText, Headphones } from 'lucide-react'
 
 interface BookStatsProps {
   bookDetails: BookDetails | null
@@ -7,63 +7,54 @@ interface BookStatsProps {
 }
 
 export function BookStats({ bookDetails, chapters }: BookStatsProps) {
-  const totalWords = chapters.reduce((sum, chapter) => {
-    return sum + (chapter.metadata.word_count || 0)
+  const totalWordCount = chapters.reduce((sum, chapter) => 
+    sum + (chapter.metadata.word_count || 0), 0
+  )
+  
+  const totalReadingTime = chapters.reduce((sum, chapter) => {
+    const time = chapter.metadata.reading_time || '0 min'
+    const minutes = parseInt(time.split(' ')[0]) || 0
+    return sum + minutes
   }, 0)
-
-  const audioChapters = chapters.filter(chapter => chapter.metadata.enable_audio).length
+  
+  const audioEnabledChapters = chapters.filter(chapter => 
+    chapter.metadata.enable_audio
+  ).length
 
   const stats = [
     {
-      icon: BookOpen,
+      icon: Book,
       label: 'Chapters',
       value: chapters.length.toString(),
-      color: 'text-blue-500'
+      color: 'text-blue-400'
+    },
+    {
+      icon: FileText,
+      label: 'Words',
+      value: totalWordCount.toLocaleString(),
+      color: 'text-green-400'
     },
     {
       icon: Clock,
       label: 'Reading Time',
-      value: bookDetails?.metadata?.reading_time || '2-3 hours',
-      color: 'text-green-500'
+      value: `${Math.round(totalReadingTime)} min`,
+      color: 'text-purple-400'
     },
     {
-      icon: BookOpen,
-      label: 'Words',
-      value: totalWords.toLocaleString(),
-      color: 'text-purple-500'
-    },
-    {
-      icon: Volume2,
+      icon: Headphones,
       label: 'Audio Chapters',
-      value: audioChapters.toString(),
-      color: 'text-orange-500'
-    },
-    {
-      icon: Users,
-      label: 'Readers',
-      value: '1,247',
-      color: 'text-pink-500'
-    },
-    {
-      icon: Star,
-      label: 'Rating',
-      value: '4.8/5',
-      color: 'text-yellow-500'
+      value: audioEnabledChapters.toString(),
+      color: 'text-orange-400'
     }
   ]
 
   return (
     <section className="mb-16">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
-          <div 
-            key={index}
-            className="p-6 bg-card border rounded-2xl text-center hover:shadow-lg transition-all duration-300 card-hover glass-effect"
-          >
-            <div className="flex justify-center mb-3">
-              <stat.icon className={`w-8 h-8 ${stat.color}`} />
-            </div>
-            <div className="text-2xl font-bold mb-1">{stat.value}</div>
+          <div key={index} className="text-center p-6 border rounded-2xl bg-card glass-effect">
+            <stat.icon className={`w-8 h-8 mx-auto mb-3 ${stat.color}`} />
+            <div className="text-3xl font-bold mb-1">{stat.value}</div>
             <div className="text-sm text-muted-foreground">{stat.label}</div>
           </div>
         ))}

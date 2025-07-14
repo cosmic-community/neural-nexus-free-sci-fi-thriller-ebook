@@ -8,7 +8,7 @@ import { SocialShare } from '@/components/SocialShare'
 import { ReadingProgress } from '@/components/ReadingProgress'
 import { BookStats } from '@/components/BookStats'
 import { Footer } from '@/components/Footer'
-import { Chapter, SiteSettings } from '@/lib/cosmic'
+import { Chapter, SiteSettings, BookDetails } from '@/lib/cosmic'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -18,18 +18,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params
   
   try {
-    const chapter = await cosmic.objects.findOne({
+    const response = await cosmic.objects.findOne({
       type: 'chapters',
       slug: slug
-    }).depth(1)
+    }).props(['id', 'title', 'slug', 'metadata']).depth(1)
 
-    if (!chapter) {
+    if (!response.object) {
       return {
         title: 'Chapter Not Found',
         description: 'The requested chapter could not be found.'
       }
     }
 
+    const chapter = response.object as Chapter
     const siteSettings = await getSiteSettings()
 
     const siteTitle = siteSettings?.metadata?.site_title || 'Neural Nexus'
@@ -64,11 +65,11 @@ export default async function ChapterPage({ params }: PageProps) {
   const { slug } = await params
   
   try {
-    const [chapter, allChapters, siteSettings, bookDetails] = await Promise.all([
+    const [chapterResponse, allChaptersResponse, siteSettings, bookDetails] = await Promise.all([
       cosmic.objects.findOne({
         type: 'chapters',
         slug: slug
-      }).depth(1),
+      }).props(['id', 'title', 'slug', 'metadata']).depth(1),
       cosmic.objects.find({
         type: 'chapters'
       }).props(['id', 'title', 'slug', 'metadata']).depth(1),
@@ -76,11 +77,14 @@ export default async function ChapterPage({ params }: PageProps) {
       getBookDetails()
     ])
 
-    if (!chapter) {
+    if (!chapterResponse.object) {
       notFound()
     }
 
-    const sortedChapters = allChapters.objects.sort((a: Chapter, b: Chapter) => 
+    const chapter = chapterResponse.object as Chapter
+    const allChapters = allChaptersResponse.objects as Chapter[]
+
+    const sortedChapters = allChapters.sort((a: Chapter, b: Chapter) => 
       a.metadata.chapter_number - b.metadata.chapter_number
     )
 
@@ -138,11 +142,11 @@ export default async function ChapterPage({ params }: PageProps) {
 
 export async function generateStaticParams() {
   try {
-    const chapters = await cosmic.objects.find({
+    const response = await cosmic.objects.find({
       type: 'chapters'
     }).props(['slug'])
 
-    return chapters.objects.map((chapter: Chapter) => ({
+    return response.objects.map((chapter: Chapter) => ({
       slug: chapter.slug
     }))
   } catch (error) {
