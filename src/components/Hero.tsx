@@ -9,6 +9,10 @@ interface HeroProps {
 export function Hero({ bookDetails, siteSettings }: HeroProps) {
   const primaryColor = siteSettings?.metadata?.primary_color || '#00ffff'
   
+  // Use the cover image from bookDetails or fallback to default
+  const coverImageUrl = bookDetails?.metadata?.cover_image?.imgix_url || 
+                        'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=2000&auto=format,compress'
+  
   return (
     <section className="relative py-20 lg:py-32 overflow-hidden">
       {/* Background Effects */}
@@ -47,11 +51,11 @@ export function Hero({ bookDetails, siteSettings }: HeroProps) {
             <div className="flex flex-wrap gap-6 text-sm text-muted-foreground mb-8">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4" />
-                <span>6 chapters</span>
+                <span>12 chapters</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                <span>{bookDetails?.metadata?.reading_time || '20-25 min'}</span>
+                <span>{bookDetails?.metadata?.reading_time || '90+ min'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Volume2 className="w-4 h-4" />
@@ -73,7 +77,7 @@ export function Hero({ bookDetails, siteSettings }: HeroProps) {
               </a>
               
               <a
-                href="/support"
+                href="#support"
                 className="btn btn-outline btn-lg group"
               >
                 <Download className="w-5 h-5 mr-2" />
@@ -87,7 +91,7 @@ export function Hero({ bookDetails, siteSettings }: HeroProps) {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 blur-3xl transform rotate-6" />
               <img
-                src={bookDetails?.metadata?.cover_image?.imgix_url || '/neural-nexus-cover.png'}
+                src={`${coverImageUrl}?w=600&h=800&fit=crop&auto=format,compress`}
                 alt={`${bookDetails?.metadata?.title || 'Neural Nexus'} book cover`}
                 className="relative w-80 h-auto rounded-2xl shadow-2xl border border-primary/20"
                 width={320}

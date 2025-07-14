@@ -123,12 +123,14 @@ export async function getBookDetails(): Promise<BookDetails | null> {
         author: 'AI Generated Story',
         description: '<p>In the year 2087, neural interfaces have revolutionized human consciousness. Dr. Maya Chen, a brilliant neuroscientist, discovers that her groundbreaking brain-computer interface technology has been secretly weaponized by the powerful Nexus Corporation.</p><p>When she attempts to expose the truth, Maya becomes the target of digital assassins who can hack human minds directly. Racing against time through a world where the line between human consciousness and artificial intelligence has been dangerously blurred, she must navigate corporate espionage, mind-hacking, and her own augmented reality to survive.</p><p>A fast-paced thriller that explores the dark side of technological advancement and the price of human enhancement.</p>',
         cover_image: {
-          url: '/neural-nexus-cover.png',
-          imgix_url: '/neural-nexus-cover.png'
+          url: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=2000&auto=format,compress',
+          imgix_url: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=2000&auto=format,compress'
         },
         genre: 'Sci-Fi Thriller',
         publication_date: '2024',
         reading_time: '2-3 hours',
+        donation_url: 'https://buymeacoffee.com/yourname',
+        stripe_url: 'https://donate.stripe.com/your-link',
         enable_tts: true,
         default_voice: { key: 'female', value: 'Female' }
       }
@@ -138,7 +140,7 @@ export async function getBookDetails(): Promise<BookDetails | null> {
 
 export async function getChapters(): Promise<Chapter[]> {
   try {
-    // Remove limit parameter to fetch all chapters
+    // Fetch all chapters without limit
     const response = await cosmic.objects.find({
       type: 'chapters',
     }).props(['id', 'title', 'slug', 'metadata']).depth(1)

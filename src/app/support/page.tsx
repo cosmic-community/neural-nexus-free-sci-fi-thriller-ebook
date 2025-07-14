@@ -1,7 +1,18 @@
+import { Metadata } from 'next'
 import { getBookDetails, getSiteSettings } from '@/lib/cosmic'
-import { ThemeToggle } from '@/components/ThemeToggle'
-import Link from 'next/link'
-import { ArrowLeft, Heart, Coffee, CreditCard, Gift, Star, Users } from 'lucide-react'
+import { DonateButton } from '@/components/DonateButton'
+import { Footer } from '@/components/Footer'
+import { Heart, Coffee, CreditCard, Gift, BookOpen, Star } from 'lucide-react'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const siteSettings = await getSiteSettings()
+  const bookDetails = await getBookDetails()
+  
+  return {
+    title: `Support the Author - ${siteSettings?.metadata?.site_title || 'Neural Nexus'}`,
+    description: `Support the author of ${bookDetails?.metadata?.title || 'Neural Nexus'} and help create more amazing sci-fi stories.`,
+  }
+}
 
 export default async function SupportPage() {
   const [bookDetails, siteSettings] = await Promise.all([
@@ -12,166 +23,187 @@ export default async function SupportPage() {
   return (
     <div className="min-h-screen gradient-bg">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Navigation */}
-        <nav className="flex justify-between items-center mb-12">
-          <Link href="/" className="flex items-center gap-2 hover:text-primary transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back to Book</span>
-          </Link>
-          
-          <div className="flex items-center gap-4">
-            {siteSettings?.metadata?.enable_dark_mode && <ThemeToggle />}
-          </div>
-        </nav>
-
-        {/* Main Content */}
-        <div className="text-center mb-16">
-          <div className="w-20 h-20 bg-gradient-to-br from-pink-500 to-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Heart className="w-10 h-10 text-white" />
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-primary/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
+            <Heart className="w-5 h-5 text-primary" />
+            <span className="text-primary font-medium">Support the Author</span>
           </div>
           
           <h1 className="text-5xl font-bold mb-4">
-            <span className="gradient-text">Support the Author</span>
+            <span className="gradient-text">Help Create More Stories</span>
           </h1>
           
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Neural Nexus is free to read, but your support helps create more amazing sci-fi stories
+            Your support helps me continue creating immersive sci-fi stories like {bookDetails?.metadata?.title || 'Neural Nexus'}
           </p>
         </div>
 
-        {/* Support Options */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          {bookDetails?.metadata?.donation_url && (
-            <div className="p-8 bg-card border rounded-3xl text-center hover:shadow-lg transition-all duration-300 card-hover">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Coffee className="w-8 h-8 text-orange-600" />
+        {/* Book Info */}
+        <div className="bg-card rounded-2xl p-8 mb-12 glass-effect">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+              <h2 className="text-2xl font-bold mb-4">About {bookDetails?.metadata?.title || 'Neural Nexus'}</h2>
+              <div className="prose prose-lg text-muted-foreground mb-6">
+                <div dangerouslySetInnerHTML={{ 
+                  __html: bookDetails?.metadata?.description || 
+                  '<p>A thrilling sci-fi story about neural interfaces and digital consciousness.</p>' 
+                }} />
               </div>
               
-              <h3 className="text-2xl font-bold mb-4">Buy Me a Coffee</h3>
-              <p className="text-muted-foreground mb-6">
-                Support with a quick $5 donation. Perfect for showing appreciation for the story.
-              </p>
+              <div className="flex items-center gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" />
+                  <span>12 chapters</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>{bookDetails?.metadata?.reading_time || '90+ min'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>Free to read</span>
+                </div>
+              </div>
+            </div>
+            
+            {bookDetails?.metadata?.cover_image && (
+              <div className="flex justify-center">
+                <img
+                  src={`${bookDetails.metadata.cover_image.imgix_url}?w=300&h=400&fit=crop&auto=format,compress`}
+                  alt={bookDetails.metadata.title}
+                  className="w-48 h-auto rounded-xl shadow-lg"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Support Options */}
+        <div className="grid md:grid-cols-2 gap-8 mb-12">
+          {/* Buy Me a Coffee */}
+          {bookDetails?.metadata?.donation_url && (
+            <div className="bg-card rounded-2xl p-8 glass-effect border border-orange-200">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Coffee className="w-8 h-8 text-orange-600" />
+                </div>
+                <h3 className="text-2xl font-bold mb-2">Buy Me a Coffee</h3>
+                <p className="text-muted-foreground">Support with a quick $5 donation</p>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 text-sm">
+                  <Star className="w-4 h-4 text-orange-500" />
+                  <span>Quick and easy</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <Star className="w-4 h-4 text-orange-500" />
+                  <span>No account required</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <Star className="w-4 h-4 text-orange-500" />
+                  <span>Secure payment</span>
+                </div>
+              </div>
               
               <a
                 href={bookDetails.metadata.donation_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl hover:from-orange-600 hover:to-amber-600 transition-all duration-300 btn-hover font-semibold"
+                className="btn btn-primary w-full mt-6"
               >
-                <Coffee className="w-5 h-5" />
-                Buy Coffee
+                <Coffee className="w-5 h-5 mr-2" />
+                Buy Me a Coffee
               </a>
             </div>
           )}
-          
+
+          {/* Custom Donation */}
           {bookDetails?.metadata?.stripe_url && (
-            <div className="p-8 bg-card border rounded-3xl text-center hover:shadow-lg transition-all duration-300 card-hover">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CreditCard className="w-8 h-8 text-blue-600" />
+            <div className="bg-card rounded-2xl p-8 glass-effect border border-blue-200">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CreditCard className="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 className="text-2xl font-bold mb-2">Custom Donation</h3>
+                <p className="text-muted-foreground">Choose your own amount</p>
               </div>
               
-              <h3 className="text-2xl font-bold mb-4">Custom Donation</h3>
-              <p className="text-muted-foreground mb-6">
-                Choose your own amount to support future projects. Every contribution helps.
-              </p>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 text-sm">
+                  <Star className="w-4 h-4 text-blue-500" />
+                  <span>Any amount welcome</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <Star className="w-4 h-4 text-blue-500" />
+                  <span>Secure Stripe payment</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <Star className="w-4 h-4 text-blue-500" />
+                  <span>Instant confirmation</span>
+                </div>
+              </div>
               
               <a
                 href={bookDetails.metadata.stripe_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all duration-300 btn-hover font-semibold"
+                className="btn btn-outline w-full mt-6"
               >
-                <CreditCard className="w-5 h-5" />
-                Donate Now
+                <CreditCard className="w-5 h-5 mr-2" />
+                Custom Donation
               </a>
             </div>
           )}
         </div>
 
         {/* Why Support */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold mb-8 text-center">
-            <span className="gradient-text">Why Support?</span>
-          </h2>
+        <div className="bg-card rounded-2xl p-8 mb-12 glass-effect">
+          <h3 className="text-2xl font-bold mb-6 text-center">Why Your Support Matters</h3>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Gift className="w-8 h-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">More Stories</h3>
-              <p className="text-muted-foreground">
-                Your support enables the creation of more free sci-fi stories for the community
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <BookOpen className="w-12 h-12 text-primary mx-auto mb-4" />
+              <h4 className="font-semibold mb-2">More Stories</h4>
+              <p className="text-sm text-muted-foreground">
+                Fund the creation of new sci-fi adventures and expanded universes
               </p>
             </div>
             
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Star className="w-8 h-8 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Quality Content</h3>
-              <p className="text-muted-foreground">
-                Support helps maintain high-quality writing and interactive reading experiences
+            <div className="text-center">
+              <Heart className="w-12 h-12 text-primary mx-auto mb-4" />
+              <h4 className="font-semibold mb-2">Author Support</h4>
+              <p className="text-sm text-muted-foreground">
+                Help cover writing time, research, and creative development
               </p>
             </div>
             
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-pink-600" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Community</h3>
-              <p className="text-muted-foreground">
-                Join a community of readers who support independent sci-fi authors
+            <div className="text-center">
+              <Gift className="w-12 h-12 text-primary mx-auto mb-4" />
+              <h4 className="font-semibold mb-2">Free Content</h4>
+              <p className="text-sm text-muted-foreground">
+                Keep stories free for everyone while supporting the author
               </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Impact Stats */}
-        <div className="p-8 bg-card border rounded-3xl mb-16">
-          <h3 className="text-2xl font-bold mb-6 text-center">Support Impact</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="text-3xl font-bold text-primary mb-2">1,247</div>
-              <div className="text-muted-foreground">Readers reached</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-primary mb-2">$847</div>
-              <div className="text-muted-foreground">Raised for future projects</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-primary mb-2">4.8/5</div>
-              <div className="text-muted-foreground">Average rating</div>
             </div>
           </div>
         </div>
 
-        {/* Other Ways to Support */}
-        <section className="text-center">
-          <h3 className="text-2xl font-bold mb-6">Other Ways to Support</h3>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="p-4 bg-muted/50 rounded-xl">
-              <h4 className="font-semibold mb-2">Share the Story</h4>
-              <p className="text-sm text-muted-foreground">
-                Tell friends about Neural Nexus on social media
-              </p>
-            </div>
-            <div className="p-4 bg-muted/50 rounded-xl">
-              <h4 className="font-semibold mb-2">Leave Feedback</h4>
-              <p className="text-sm text-muted-foreground">
-                Your thoughts help improve future stories
-              </p>
-            </div>
-            <div className="p-4 bg-muted/50 rounded-xl">
-              <h4 className="font-semibold mb-2">Subscribe</h4>
-              <p className="text-sm text-muted-foreground">
-                Get notified about new releases and updates
-              </p>
-            </div>
+        {/* Thank You */}
+        <div className="text-center">
+          <h3 className="text-2xl font-bold mb-4">Thank You for Reading!</h3>
+          <p className="text-muted-foreground mb-6">
+            Whether you support financially or just by reading and sharing, every bit helps
+          </p>
+          
+          <div className="flex justify-center">
+            <DonateButton bookDetails={bookDetails} />
           </div>
-        </section>
+        </div>
       </div>
+      
+      <Footer 
+        bookDetails={bookDetails}
+        siteSettings={siteSettings}
+      />
     </div>
   )
 }

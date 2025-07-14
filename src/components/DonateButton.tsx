@@ -11,10 +11,16 @@ interface DonateButtonProps {
 export function DonateButton({ bookDetails }: DonateButtonProps) {
   const [showOptions, setShowOptions] = useState(false)
   
+  // Check if any donation options are available
   const hasDonationOptions = bookDetails?.metadata?.donation_url || bookDetails?.metadata?.stripe_url
   
   if (!hasDonationOptions) {
-    return null
+    return (
+      <div className="flex items-center gap-2 px-6 py-3 bg-muted/50 rounded-xl">
+        <Heart className="w-5 h-5 text-muted-foreground" />
+        <span className="font-medium text-muted-foreground">Support Coming Soon</span>
+      </div>
+    )
   }
 
   return (
