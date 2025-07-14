@@ -34,9 +34,9 @@ export async function POST(request: NextRequest) {
           { status: 409 }
         )
       }
-    } catch (error) {
+    } catch (error: unknown) {
       // If 404, email doesn't exist - continue with subscription
-      if (error && typeof error === 'object' && 'status' in error && error.status !== 404) {
+      if (error && typeof error === 'object' && 'status' in error && (error as any).status !== 404) {
         throw error
       }
     }
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       id: newSubscriber.object.id
     })
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Newsletter subscription error:', error)
     return NextResponse.json(
       { error: 'Failed to subscribe to newsletter' },
