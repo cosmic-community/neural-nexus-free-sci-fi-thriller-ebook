@@ -30,6 +30,45 @@ export function ChapterReader({ chapter, siteSettings }: ChapterReaderProps) {
     }
   }, [])
 
+  const selectBestVoice = (voices: SpeechSynthesisVoice[]) => {
+    if (voices.length === 0) return null
+    
+    // Priority order for more natural-sounding voices
+    const voicePreferences = [
+      // High-quality neural voices (usually available on newer systems)
+      (v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('neural') && v.lang.startsWith('en'),
+      (v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('enhanced') && v.lang.startsWith('en'),
+      (v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('premium') && v.lang.startsWith('en'),
+      
+      // Platform-specific high-quality voices
+      (v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('samantha') && v.lang.startsWith('en'), // macOS
+      (v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('alex') && v.lang.startsWith('en'), // macOS
+      (v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('zira') && v.lang.startsWith('en'), // Windows
+      (v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('hazel') && v.lang.startsWith('en'), // Windows
+      (v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('david') && v.lang.startsWith('en'), // Windows
+      
+      // Google voices (often high quality)
+      (v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('google') && v.lang.startsWith('en'),
+      
+      // Local voices over remote ones (better performance)
+      (v: SpeechSynthesisVoice) => v.localService && v.lang.startsWith('en'),
+      
+      // Fallback to any English voice
+      (v: SpeechSynthesisVoice) => v.lang.startsWith('en-US'),
+      (v: SpeechSynthesisVoice) => v.lang.startsWith('en-GB'),
+      (v: SpeechSynthesisVoice) => v.lang.startsWith('en'),
+    ]
+    
+    // Try each preference in order
+    for (const preference of voicePreferences) {
+      const voice = voices.find(preference)
+      if (voice) return voice
+    }
+    
+    // Ultimate fallback
+    return voices[0]
+  }
+
   const toggleSpeech = () => {
     if (!chapter.metadata.enable_audio) return
     
@@ -45,19 +84,25 @@ export function ChapterReader({ chapter, siteSettings }: ChapterReaderProps) {
           chapter.metadata.content.replace(/<[^>]*>/g, '') // Strip HTML tags
         )
         
-        // Find appropriate voice
-        const preferredVoice = voices.find(voice => 
-          voice.lang === 'en-US' && voice.name.includes('Female')
-        ) || voices[0]
+        // Select the best available voice
+        const selectedVoice = selectBestVoice(voices)
         
-        if (preferredVoice) {
-          utterance.voice = preferredVoice
+        if (selectedVoice) {
+          utterance.voice = selectedVoice
         }
         
-        utterance.rate = 0.9
-        utterance.pitch = 1
+        // Optimize speech settings for natural reading
+        utterance.rate = 0.85 // Slightly slower for better comprehension
+        utterance.pitch = 1.0
+        utterance.volume = 0.9
         
         utterance.onend = () => {
+          setIsPlaying(false)
+          setSpeech(null)
+        }
+        
+        utterance.onerror = (event) => {
+          console.error('Speech synthesis error:', event.error)
           setIsPlaying(false)
           setSpeech(null)
         }
