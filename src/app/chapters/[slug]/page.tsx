@@ -1,7 +1,7 @@
 // src/app/chapters/[slug]/page.tsx
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { cosmic } from '@/lib/cosmic'
+import { cosmic, getBookDetails } from '@/lib/cosmic'
 import { ChapterReader } from '@/components/ChapterReader'
 import { ChapterNavigation } from '@/components/ChapterNavigation'
 import { SocialShare } from '@/components/SocialShare'
@@ -66,7 +66,7 @@ export default async function ChapterPage({ params }: PageProps) {
   const { slug } = await params
   
   try {
-    const [chapter, allChapters, siteSettings] = await Promise.all([
+    const [chapter, allChapters, siteSettings, bookDetails] = await Promise.all([
       cosmic.objects.findOne({
         type: 'chapters',
         slug: slug
@@ -76,7 +76,8 @@ export default async function ChapterPage({ params }: PageProps) {
       }).props(['id', 'title', 'slug', 'metadata']).depth(1),
       cosmic.objects.findOne({
         type: 'site-settings'
-      }).depth(1)
+      }).depth(1),
+      getBookDetails()
     ])
 
     if (!chapter) {
@@ -93,14 +94,21 @@ export default async function ChapterPage({ params }: PageProps) {
 
     return (
       <div className="min-h-screen bg-background">
-        <ReadingProgress />
+        <ReadingProgress chapters={sortedChapters} />
         
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            <ChapterReader chapter={chapter} />
+            <ChapterReader 
+              chapter={chapter} 
+              siteSettings={siteSettings}
+              allChapters={sortedChapters}
+            />
             
             <div className="mt-12">
-              <BookStats chapters={sortedChapters} currentChapter={chapter} />
+              <BookStats 
+                bookDetails={bookDetails}
+                chapters={sortedChapters}
+              />
             </div>
 
             <ChapterNavigation
@@ -120,7 +128,10 @@ export default async function ChapterPage({ params }: PageProps) {
           </div>
         </main>
 
-        <Footer />
+        <Footer 
+          bookDetails={bookDetails}
+          siteSettings={siteSettings}
+        />
       </div>
     )
   } catch (error) {
