@@ -75,6 +75,23 @@ export interface Chapter {
   }
 }
 
+export interface NewsletterSubscriber {
+  id: string
+  title: string
+  slug: string
+  metadata: {
+    email: string
+    subscription_date: string
+    active: boolean
+    source: {
+      key: string
+      value: string
+    }
+    preferences: string[]
+    notes?: string
+  }
+}
+
 // Fetch functions with proper error handling
 export async function getSiteSettings(): Promise<SiteSettings | null> {
   try {
@@ -206,6 +223,23 @@ export async function getAllChaptersForStaticGeneration(): Promise<Chapter[]> {
     return []
   } catch (error) {
     console.error('Error fetching chapters for static generation:', error)
+    return []
+  }
+}
+
+export async function getNewsletterSubscribers(): Promise<NewsletterSubscriber[]> {
+  try {
+    const response = await cosmic.objects.find({
+      type: 'newsletter-subscribers',
+    }).props(['id', 'title', 'slug', 'metadata']).depth(1)
+    
+    if (response.objects && response.objects.length > 0) {
+      return response.objects as NewsletterSubscriber[]
+    }
+    
+    return []
+  } catch (error) {
+    console.error('Error fetching newsletter subscribers:', error)
     return []
   }
 }

@@ -1,22 +1,52 @@
 'use client'
 
 import { useState } from 'react'
-import { Mail, Send } from 'lucide-react'
+import { Mail, Send, CheckCircle, AlertCircle } from 'lucide-react'
 
 export function NewsletterSignup() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [errorMessage, setErrorMessage] = useState('')
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('loading')
+    setErrorMessage('')
     
-    // Simulate API call
-    setTimeout(() => {
-      setStatus('success')
-      setEmail('')
-      setTimeout(() => setStatus('idle'), 3000)
-    }, 1000)
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+      
+      const data = await response.json()
+      
+      if (response.ok) {
+        setStatus('success')
+        setEmail('')
+        // Reset to idle after 5 seconds
+        setTimeout(() => setStatus('idle'), 5000)
+      } else {
+        setStatus('error')
+        setErrorMessage(data.error || 'Failed to subscribe')
+        // Reset to idle after 5 seconds
+        setTimeout(() => {
+          setStatus('idle')
+          setErrorMessage('')
+        }, 5000)
+      }
+    } catch (error) {
+      setStatus('error')
+      setErrorMessage('Network error. Please try again.')
+      // Reset to idle after 5 seconds
+      setTimeout(() => {
+        setStatus('idle')
+        setErrorMessage('')
+      }, 5000)
+    }
   }
   
   return (
@@ -43,21 +73,43 @@ export function NewsletterSignup() {
               placeholder="Enter your email"
               className="flex-1 px-4 py-3 border rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-primary"
               required
+              disabled={status === 'loading'}
             />
             <button
               type="submit"
               disabled={status === 'loading'}
               className="px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
             >
-              <Send className="w-4 h-4" />
-              {status === 'loading' ? 'Sending...' : 'Subscribe'}
+              {status === 'loading' ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  Subscribing...
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  Subscribe
+                </>
+              )}
             </button>
           </form>
           
           {status === 'success' && (
-            <p className="mt-4 text-primary font-medium">
-              Thank you for subscribing! 🎉
-            </p>
+            <div className="mt-4 flex items-center justify-center gap-2 text-green-600">
+              <CheckCircle className="w-5 h-5" />
+              <p className="font-medium">
+                Thank you for subscribing! 🎉
+              </p>
+            </div>
+          )}
+          
+          {status === 'error' && (
+            <div className="mt-4 flex items-center justify-center gap-2 text-red-600">
+              <AlertCircle className="w-5 h-5" />
+              <p className="font-medium">
+                {errorMessage}
+              </p>
+            </div>
           )}
           
           <p className="text-xs text-muted-foreground mt-4">
