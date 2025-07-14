@@ -1,0 +1,247 @@
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.8);
+}
+
+/* Custom selection */
+::selection {
+  background: hsl(var(--primary) / 0.2);
+  color: hsl(var(--foreground));
+}
+
+/* Focus visible styles */
+.focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Button component styles */
+.btn {
+  @apply inline-flex items-center justify-center rounded-xl font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+}
+
+.btn-primary {
+  @apply bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 hover:shadow-xl;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+}
+
+.btn-outline {
+  @apply border border-input bg-background hover:bg-accent hover:text-accent-foreground;
+}
+
+.btn-ghost {
+  @apply hover:bg-accent hover:text-accent-foreground;
+}
+
+.btn-sm {
+  @apply h-9 px-3 text-sm;
+}
+
+.btn-md {
+  @apply h-11 px-4 py-2;
+}
+
+.btn-lg {
+  @apply h-12 px-6 py-3 text-lg;
+}
+
+.btn-xl {
+  @apply h-14 px-8 py-4 text-xl;
+}
+
+/* Card component styles */
+.card {
+  @apply rounded-2xl border bg-card text-card-foreground shadow-lg;
+}
+
+.card-header {
+  @apply flex flex-col space-y-1.5 p-6;
+}
+
+.card-title {
+  @apply text-2xl font-semibold leading-none tracking-tight;
+}
+
+.card-description {
+  @apply text-sm text-muted-foreground;
+}
+
+.card-content {
+  @apply p-6 pt-0;
+}
+
+.card-footer {
+  @apply flex items-center p-6 pt-0;
+}
+
+/* Reading progress styles */
+.reading-progress {
+  @apply fixed top-0 left-0 right-0 h-1 bg-muted z-50;
+}
+
+.reading-progress-bar {
+  @apply h-full bg-primary transition-all duration-150;
+}
+
+/* Chapter content styles */
+.chapter-content {
+  @apply prose prose-lg max-w-none;
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+
+.chapter-content h1,
+.chapter-content h2,
+.chapter-content h3,
+.chapter-content h4,
+.chapter-content h5,
+.chapter-content h6 {
+  @apply text-foreground font-semibold mt-8 mb-4;
+}
+
+.chapter-content p {
+  @apply mb-6 text-justify;
+}
+
+.chapter-content strong {
+  @apply font-semibold text-foreground;
+}
+
+.chapter-content em {
+  @apply italic;
+}
+
+.chapter-content blockquote {
+  @apply border-l-4 border-primary pl-4 italic text-muted-foreground;
+}
+
+/* Dark mode specific styles */
+.dark .chapter-content {
+  @apply prose-invert;
+}
+
+/* Animation utilities */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.6s ease-out;
+}
+
+.animate-bounce-in {
+  animation: bounceIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive design utilities */
+@media (max-width: 768px) {
+  .chapter-content {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  
+  .chapter-content h1 {
+    font-size: 2rem;
+  }
+  
+  .chapter-content h2 {
+    font-size: 1.75rem;
+  }
+  
+  .chapter-content h3 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .chapter-content {
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+  
+  .chapter-content h1,
+  .chapter-content h2,
+  .chapter-content h3 {
+    page-break-after: avoid;
+  }
+  
+  .chapter-content p {
+    page-break-inside: avoid;
+  }
+}
