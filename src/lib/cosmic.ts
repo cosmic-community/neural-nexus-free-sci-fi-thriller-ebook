@@ -8,7 +8,7 @@ const cosmic = createBucketClient({
   apiEnvironment: "staging"
 })
 
-// Export the cosmic client
+// Export the cosmic client - FIX: Export cosmic client properly
 export { cosmic }
 
 // TypeScript interfaces

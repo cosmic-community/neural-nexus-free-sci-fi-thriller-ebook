@@ -1,7 +1,7 @@
 // src/app/chapters/[slug]/page.tsx
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { cosmic, getBookDetails } from '@/lib/cosmic'
+import { cosmic, getBookDetails, getSiteSettings } from '@/lib/cosmic'
 import { ChapterReader } from '@/components/ChapterReader'
 import { ChapterNavigation } from '@/components/ChapterNavigation'
 import { SocialShare } from '@/components/SocialShare'
@@ -30,9 +30,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       }
     }
 
-    const siteSettings = await cosmic.objects.findOne({
-      type: 'site-settings'
-    }).depth(1)
+    const siteSettings = await getSiteSettings()
 
     const siteTitle = siteSettings?.metadata?.site_title || 'Neural Nexus'
     const chapterTitle = chapter.metadata.chapter_title
@@ -74,9 +72,7 @@ export default async function ChapterPage({ params }: PageProps) {
       cosmic.objects.find({
         type: 'chapters'
       }).props(['id', 'title', 'slug', 'metadata']).depth(1),
-      cosmic.objects.findOne({
-        type: 'site-settings'
-      }).depth(1),
+      getSiteSettings(),
       getBookDetails()
     ])
 
