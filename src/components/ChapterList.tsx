@@ -10,6 +10,21 @@ interface ChapterListProps {
 export function ChapterList({ chapters, siteSettings }: ChapterListProps) {
   const primaryColor = siteSettings?.metadata?.primary_color || '#00ffff'
   
+  if (!chapters || chapters.length === 0) {
+    return (
+      <section id="chapters" className="mb-16">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold mb-4">
+            <span className="gradient-text">Chapters</span>
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            No chapters available at the moment.
+          </p>
+        </div>
+      </section>
+    )
+  }
+  
   return (
     <section id="chapters" className="mb-16">
       <div className="text-center mb-12">
@@ -66,7 +81,7 @@ export function ChapterList({ chapters, siteSettings }: ChapterListProps) {
                   {chapter.metadata?.word_count && (
                     <div className="flex items-center gap-2">
                       <BookOpen className="w-4 h-4" />
-                      <span>{chapter.metadata.word_count} words</span>
+                      <span>{chapter.metadata.word_count.toLocaleString()} words</span>
                     </div>
                   )}
                 </div>

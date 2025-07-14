@@ -1,5 +1,4 @@
 import { createBucketClient } from '@cosmicjs/sdk'
-import { demoChapters } from '@/data/chapters'
 
 // Initialize Cosmic client
 const cosmic = createBucketClient({
@@ -129,7 +128,7 @@ export async function getBookDetails(): Promise<BookDetails | null> {
         },
         genre: 'Sci-Fi Thriller',
         publication_date: '2024',
-        reading_time: '20-25 minutes',
+        reading_time: '2-3 hours',
         enable_tts: true,
         default_voice: { key: 'female', value: 'Female' }
       }
@@ -141,7 +140,7 @@ export async function getChapters(): Promise<Chapter[]> {
   try {
     const response = await cosmic.objects.find({
       type: 'chapters',
-    }).props(['id', 'title', 'slug', 'metadata']).depth(1).sort('metadata.chapter_number')
+    }).props(['id', 'title', 'slug', 'metadata']).depth(1)
     
     if (response.objects && response.objects.length > 0) {
       const chapters = response.objects as Chapter[]
@@ -154,13 +153,13 @@ export async function getChapters(): Promise<Chapter[]> {
       })
     }
     
-    // If no chapters found in Cosmic, return demo chapters
-    return demoChapters as Chapter[]
+    // Return empty array if no chapters found
+    return []
   } catch (error) {
     console.error('Error fetching chapters:', error)
     
-    // Return demo chapters if error occurs
-    return demoChapters as Chapter[]
+    // Return empty array if error occurs
+    return []
   }
 }
 
@@ -175,14 +174,9 @@ export async function getChapterBySlug(slug: string): Promise<Chapter | null> {
       return response.object as Chapter
     }
     
-    // If not found in Cosmic, check demo chapters
-    const demoChapter = demoChapters.find(chapter => chapter.slug === slug)
-    return demoChapter as Chapter || null
+    return null
   } catch (error) {
     console.error('Error fetching chapter:', error)
-    
-    // Return demo chapter if error occurs
-    const demoChapter = demoChapters.find(chapter => chapter.slug === slug)
-    return demoChapter as Chapter || null
+    return null
   }
 }
