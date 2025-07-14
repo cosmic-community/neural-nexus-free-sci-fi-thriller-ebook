@@ -55,9 +55,11 @@ export function Hero({ bookDetails, siteSettings }: HeroProps) {
                 {/* Book Cover */}
                 <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-1 shadow-2xl">
                   <img 
-                    src="/api/placeholder/600/800"
+                    src={bookDetails?.metadata?.cover_image?.imgix_url || "/neural-nexus-cover.png"}
                     alt={bookDetails?.metadata?.title || 'Neural Nexus'}
                     className="w-full h-auto rounded-xl shadow-inner"
+                    width={400}
+                    height={600}
                   />
                 </div>
                 

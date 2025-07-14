@@ -10,6 +10,33 @@ interface ChapterListProps {
 export function ChapterList({ chapters, siteSettings }: ChapterListProps) {
   const primaryColor = siteSettings?.metadata?.primary_color || '#00ffff'
   
+  // If no chapters are available, show a fallback message
+  if (!chapters || chapters.length === 0) {
+    return (
+      <section id="chapters" className="mb-16">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold mb-4">
+            <span className="gradient-text">Read the Story</span>
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Follow Dr. Maya Chen's journey through a world where consciousness and technology collide
+          </p>
+        </div>
+        
+        <div className="text-center py-12">
+          <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-8 border border-muted">
+            <BookOpen className="w-16 h-16 text-primary mx-auto mb-4" />
+            <h3 className="text-2xl font-bold mb-2">Coming Soon</h3>
+            <p className="text-muted-foreground">
+              The chapters are being prepared for your reading pleasure. 
+              Check back soon to start your journey into the Neural Nexus universe!
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+  
   return (
     <section id="chapters" className="mb-16">
       <div className="text-center mb-12">
@@ -32,12 +59,12 @@ export function ChapterList({ chapters, siteSettings }: ChapterListProps) {
               {/* Chapter Number Badge */}
               <div className="absolute top-6 left-6 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                 <span className="text-primary font-bold text-lg">
-                  {chapter.metadata.chapter_number}
+                  {chapter.metadata?.chapter_number || index + 1}
                 </span>
               </div>
               
               {/* Audio Badge */}
-              {chapter.metadata.enable_audio && (
+              {chapter.metadata?.enable_audio && (
                 <div className="absolute top-6 right-6 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                   <Volume2 className="w-5 h-5 text-primary" />
                 </div>
@@ -46,10 +73,10 @@ export function ChapterList({ chapters, siteSettings }: ChapterListProps) {
               {/* Content */}
               <div className="pl-16 pr-12">
                 <h3 className="text-2xl font-bold mb-3 group-hover:text-primary transition-colors">
-                  {chapter.metadata.chapter_title}
+                  {chapter.metadata?.chapter_title || chapter.title}
                 </h3>
                 
-                {chapter.metadata.summary && (
+                {chapter.metadata?.summary && (
                   <p className="text-muted-foreground mb-6 line-clamp-3 leading-relaxed">
                     {chapter.metadata.summary}
                   </p>
@@ -57,13 +84,13 @@ export function ChapterList({ chapters, siteSettings }: ChapterListProps) {
                 
                 {/* Chapter Stats */}
                 <div className="flex flex-wrap gap-6 text-sm text-muted-foreground mb-4">
-                  {chapter.metadata.reading_time && (
+                  {chapter.metadata?.reading_time && (
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4" />
                       <span>{chapter.metadata.reading_time}</span>
                     </div>
                   )}
-                  {chapter.metadata.word_count && (
+                  {chapter.metadata?.word_count && (
                     <div className="flex items-center gap-2">
                       <BookOpen className="w-4 h-4" />
                       <span>{chapter.metadata.word_count} words</span>
