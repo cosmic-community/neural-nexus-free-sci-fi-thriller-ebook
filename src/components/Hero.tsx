@@ -54,20 +54,11 @@ export function Hero({ bookDetails, siteSettings }: HeroProps) {
                 
                 {/* Book Cover */}
                 <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-1 shadow-2xl">
-                  {bookDetails?.metadata?.cover_image ? (
-                    <img 
-                      src={`${bookDetails.metadata.cover_image.imgix_url}?w=800&h=1200&fit=crop&auto=format,compress`}
-                      alt={bookDetails.metadata.title}
-                      className="w-full h-auto rounded-xl shadow-inner"
-                    />
-                  ) : (
-                    <div className="aspect-[3/4] bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-6xl mb-4">📚</div>
-                        <p className="text-lg font-medium">Neural Nexus</p>
-                      </div>
-                    </div>
-                  )}
+                  <img 
+                    src="/api/placeholder/600/800"
+                    alt={bookDetails?.metadata?.title || 'Neural Nexus'}
+                    className="w-full h-auto rounded-xl shadow-inner"
+                  />
                 </div>
                 
                 {/* Book Spine Effect */}
@@ -148,7 +139,7 @@ export function Hero({ bookDetails, siteSettings }: HeroProps) {
             {/* Book Description */}
             <div className="prose prose-lg max-w-none text-muted-foreground">
               <div dangerouslySetInnerHTML={{ 
-                __html: bookDetails?.metadata?.description || '' 
+                __html: bookDetails?.metadata?.description || '<p>In the year 2087, neural interfaces have revolutionized human consciousness. Dr. Maya Chen, a brilliant neuroscientist, discovers that her groundbreaking brain-computer interface technology has been secretly weaponized by the powerful Nexus Corporation.</p><p>When she attempts to expose the truth, Maya becomes the target of digital assassins who can hack human minds directly. Racing against time through a world where the line between human consciousness and artificial intelligence has been dangerously blurred, she must navigate corporate espionage, mind-hacking, and her own augmented reality to survive.</p><p>A fast-paced thriller that explores the dark side of technological advancement and the price of human enhancement.</p>' 
               }} />
             </div>
 
@@ -195,7 +186,7 @@ export function Hero({ bookDetails, siteSettings }: HeroProps) {
         {/* Social Share */}
         <SocialShare 
           title={bookDetails?.metadata?.title || 'Neural Nexus'}
-          description={bookDetails?.metadata?.description || ''}
+          description={bookDetails?.metadata?.description || 'A gripping sci-fi thriller about neural interfaces, corporate espionage, and digital consciousness.'}
         />
       </div>
     </section>

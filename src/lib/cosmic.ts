@@ -7,7 +7,7 @@ const cosmic = createBucketClient({
   writeKey: process.env.COSMIC_WRITE_KEY,
 })
 
-// Export the cosmic client - FIX: Export cosmic client properly
+// Export the cosmic client
 export { cosmic }
 
 // TypeScript interfaces
@@ -74,7 +74,7 @@ export interface Chapter {
   }
 }
 
-// Fetch functions
+// Fetch functions with proper error handling
 export async function getSiteSettings(): Promise<SiteSettings | null> {
   try {
     const response = await cosmic.objects.findOne({
@@ -84,7 +84,22 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
     return response.object as SiteSettings
   } catch (error) {
     console.error('Error fetching site settings:', error)
-    return null
+    // Return default site settings if none found
+    return {
+      id: '',
+      title: 'Neural Nexus - Site Settings',
+      slug: 'neural-nexus-site-settings',
+      metadata: {
+        site_title: 'Neural Nexus - Free Sci-Fi Thriller Ebook',
+        site_description: 'Read Neural Nexus, a gripping sci-fi thriller about neural interfaces, corporate espionage, and digital consciousness. Free online ebook with text-to-speech functionality.',
+        default_theme: { key: 'dark', value: 'Dark' },
+        primary_color: '#00ffff',
+        font_family: { key: 'inter', value: 'Inter' },
+        enable_dark_mode: true,
+        show_progress: true,
+        enable_navigation: true
+      }
+    }
   }
 }
 
@@ -97,7 +112,22 @@ export async function getBookDetails(): Promise<BookDetails | null> {
     return response.object as BookDetails
   } catch (error) {
     console.error('Error fetching book details:', error)
-    return null
+    // Return default book details if none found
+    return {
+      id: '',
+      title: 'Neural Nexus - Book Details',
+      slug: 'neural-nexus-book-details',
+      metadata: {
+        title: 'Neural Nexus',
+        subtitle: 'A Sci-Fi Thriller',
+        author: 'Your Name',
+        description: '<p>In the year 2087, neural interfaces have revolutionized human consciousness. Dr. Maya Chen, a brilliant neuroscientist, discovers that her groundbreaking brain-computer interface technology has been secretly weaponized by the powerful Nexus Corporation.</p><p>When she attempts to expose the truth, Maya becomes the target of digital assassins who can hack human minds directly. Racing against time through a world where the line between human consciousness and artificial intelligence has been dangerously blurred, she must navigate corporate espionage, mind-hacking, and her own augmented reality to survive.</p><p>A fast-paced thriller that explores the dark side of technological advancement and the price of human enhancement.</p>',
+        genre: 'Sci-Fi Thriller',
+        reading_time: '2-3 hours',
+        enable_tts: true,
+        default_voice: { key: 'female', value: 'Female' }
+      }
+    }
   }
 }
 
