@@ -105,7 +105,14 @@ export async function getChapters(): Promise<Chapter[]> {
       type: 'chapters',
     }).props(['id', 'title', 'slug', 'metadata']).depth(1).sort('metadata.chapter_number')
     
-    return response.objects as Chapter[]
+    const chapters = response.objects as Chapter[]
+    
+    // Sort chapters by chapter_number to ensure correct order
+    return chapters.sort((a, b) => {
+      const aNum = a.metadata.chapter_number || 0
+      const bNum = b.metadata.chapter_number || 0
+      return aNum - bNum
+    })
   } catch (error) {
     console.error('Error fetching chapters:', error)
     return []

@@ -2,7 +2,7 @@ import { BookDetails, SiteSettings } from '@/lib/cosmic'
 import { ThemeToggle } from './ThemeToggle'
 import { DonateButton } from './DonateButton'
 import { SocialShare } from './SocialShare'
-import { Play, Download, Star, Users, Clock } from 'lucide-react'
+import { Download, Star, Users, Clock } from 'lucide-react'
 import Link from 'next/link'
 
 interface HeroProps {
@@ -82,7 +82,6 @@ export function Hero({ bookDetails, siteSettings }: HeroProps) {
                 href="#chapters"
                 className="flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all duration-300 btn-hover font-semibold"
               >
-                <Play className="w-5 h-5" />
                 Start Reading
               </Link>
               
@@ -122,16 +121,10 @@ export function Hero({ bookDetails, siteSettings }: HeroProps) {
                   className="relative w-full max-w-md mx-auto rounded-3xl shadow-2xl card-hover"
                 />
                 
-                {/* Floating Elements */}
-                <div className="absolute -top-4 -right-4 w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-lg">
-                  <span className="text-primary-foreground font-bold">FREE</span>
+                {/* Floating Elements - Fixed positioning to prevent cropping */}
+                <div className="absolute -top-4 -right-2 w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-lg">
+                  <span className="text-primary-foreground font-bold text-sm">FREE</span>
                 </div>
-                
-                {bookDetails.metadata.enable_tts && (
-                  <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-card border-2 border-primary rounded-full flex items-center justify-center shadow-lg">
-                    <Play className="w-6 h-6 text-primary" />
-                  </div>
-                )}
               </div>
             ) : (
               <div className="w-full max-w-md mx-auto aspect-[3/4] bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl flex items-center justify-center">
