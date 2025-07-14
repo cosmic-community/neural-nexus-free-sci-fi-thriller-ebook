@@ -1,4 +1,3 @@
-// src/app/chapters/[slug]/page.tsx
 import { getChapterBySlug, getChapters, getSiteSettings } from '@/lib/cosmic'
 import { ChapterReader } from '@/components/ChapterReader'
 import { ChapterNavigation } from '@/components/ChapterNavigation'
@@ -59,6 +58,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
             nextChapter={nextChapter}
             allChapters={allChapters}
             currentChapter={chapter}
+            siteSettings={siteSettings}
           />
         )}
       </div>
