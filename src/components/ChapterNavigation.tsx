@@ -1,58 +1,146 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
+import { ChevronLeft, ChevronRight, List, BookOpen } from 'lucide-react'
 import { Chapter, SiteSettings } from '@/lib/cosmic'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface ChapterNavigationProps {
   currentChapter: Chapter
   allChapters: Chapter[]
-  siteSettings?: SiteSettings | null
+  siteSettings: SiteSettings | null
   previousChapter?: Chapter | null
   nextChapter?: Chapter | null
 }
 
-export function ChapterNavigation({ currentChapter, allChapters, siteSettings, previousChapter, nextChapter }: ChapterNavigationProps) {
-  // Use the passed props if available, otherwise calculate them
-  const currentIndex = allChapters.findIndex(chapter => chapter.id === currentChapter.id)
-  const prevChapter = previousChapter !== undefined ? previousChapter : (currentIndex > 0 ? allChapters[currentIndex - 1] : null)
-  const nextChap = nextChapter !== undefined ? nextChapter : (currentIndex < allChapters.length - 1 ? allChapters[currentIndex + 1] : null)
+export function ChapterNavigation({
+  currentChapter,
+  allChapters,
+  siteSettings,
+  previousChapter,
+  nextChapter
+}: ChapterNavigationProps) {
+  const [showAllChapters, setShowAllChapters] = useState(false)
   
-  const primaryColor = siteSettings?.metadata?.primary_color || '#00ffff'
+  const currentIndex = allChapters.findIndex(chapter => chapter.id === currentChapter.id)
+  const progress = ((currentIndex + 1) / allChapters.length) * 100
 
   return (
-    <nav className="flex justify-between items-center mt-12 pt-8 border-t border-border/50">
-      <div className="flex-1">
-        {prevChapter && (
-          <Link
-            href={`/chapters/${prevChapter.slug}`}
-            className="group flex items-center gap-3 p-4 rounded-lg border bg-card hover:bg-accent transition-all duration-300 card-hover max-w-sm"
-          >
-            <ChevronLeft size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
-            <div>
-              <div className="text-sm text-muted-foreground">Previous</div>
-              <div className="font-medium group-hover:text-primary transition-colors">
-                Chapter {prevChapter.metadata.chapter_number}: {prevChapter.metadata.chapter_title}
-              </div>
-            </div>
-          </Link>
-        )}
+    <div className="mt-12 space-y-6">
+      {/* Progress Bar */}
+      <div className="w-full bg-muted rounded-full h-2">
+        <div 
+          className="bg-primary h-2 rounded-full transition-all duration-500"
+          style={{ width: `${progress}%` }}
+        />
       </div>
       
-      <div className="flex-1 flex justify-end">
-        {nextChap && (
-          <Link
-            href={`/chapters/${nextChap.slug}`}
-            className="group flex items-center gap-3 p-4 rounded-lg border bg-card hover:bg-accent transition-all duration-300 card-hover max-w-sm text-right"
+      {/* Progress Text */}
+      <div className="text-center text-sm text-muted-foreground">
+        Chapter {currentIndex + 1} of {allChapters.length}
+      </div>
+
+      {/* Navigation Buttons */}
+      <div className="flex items-center justify-between gap-4">
+        {previousChapter ? (
+          <Link 
+            href={`/chapters/${previousChapter.slug}`}
+            className="flex items-center gap-3 px-6 py-3 bg-muted/50 hover:bg-muted transition-colors rounded-xl group"
           >
-            <div>
-              <div className="text-sm text-muted-foreground">Next</div>
-              <div className="font-medium group-hover:text-primary transition-colors">
-                Chapter {nextChap.metadata.chapter_number}: {nextChap.metadata.chapter_title}
+            <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            <div className="text-left">
+              <div className="text-sm text-muted-foreground">Previous</div>
+              <div className="font-medium line-clamp-1">
+                {previousChapter.metadata.chapter_title}
               </div>
             </div>
-            <ChevronRight size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
           </Link>
+        ) : (
+          <div className="flex-1" />
+        )}
+
+        {/* Chapter List Toggle */}
+        <button
+          onClick={() => setShowAllChapters(!showAllChapters)}
+          className="flex items-center gap-2 px-4 py-3 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl transition-colors"
+        >
+          <List className="w-5 h-5" />
+          <span className="font-medium">All Chapters</span>
+        </button>
+
+        {nextChapter ? (
+          <Link 
+            href={`/chapters/${nextChapter.slug}`}
+            className="flex items-center gap-3 px-6 py-3 bg-muted/50 hover:bg-muted transition-colors rounded-xl group"
+          >
+            <div className="text-right">
+              <div className="text-sm text-muted-foreground">Next</div>
+              <div className="font-medium line-clamp-1">
+                {nextChapter.metadata.chapter_title}
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        ) : (
+          <div className="flex-1" />
         )}
       </div>
-    </nav>
+
+      {/* All Chapters List */}
+      {showAllChapters && (
+        <div className="grid gap-3 p-6 bg-muted/30 rounded-xl">
+          <div className="flex items-center gap-2 mb-4">
+            <BookOpen className="w-5 h-5 text-primary" />
+            <h3 className="text-lg font-semibold">All Chapters</h3>
+          </div>
+          
+          <div className="grid gap-2">
+            {allChapters.map((chapter, index) => (
+              <Link
+                key={chapter.id}
+                href={`/chapters/${chapter.slug}`}
+                className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                  chapter.id === currentChapter.id
+                    ? 'bg-primary/20 text-primary'
+                    : 'hover:bg-muted/50'
+                }`}
+              >
+                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-sm font-medium text-primary">
+                    {chapter.metadata.chapter_number}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium line-clamp-1">
+                    {chapter.metadata.chapter_title}
+                  </div>
+                  {chapter.metadata.reading_time && (
+                    <div className="text-sm text-muted-foreground">
+                      {chapter.metadata.reading_time}
+                    </div>
+                  )}
+                </div>
+                {chapter.id === currentChapter.id && (
+                  <div className="text-xs text-primary font-medium">
+                    Current
+                  </div>
+                )}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Back to Home */}
+      <div className="text-center pt-6">
+        <Link 
+          href="/"
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          <span>Back to Home</span>
+        </Link>
+      </div>
+    </div>
   )
 }

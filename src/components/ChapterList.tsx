@@ -18,7 +18,7 @@ export function ChapterList({ chapters, siteSettings }: ChapterListProps) {
             <span className="gradient-text">Chapters</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            No chapters available at the moment.
+            Loading chapters...
           </p>
         </div>
       </section>
@@ -34,6 +34,9 @@ export function ChapterList({ chapters, siteSettings }: ChapterListProps) {
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           Follow Dr. Maya Chen's journey through a world where consciousness and technology collide
         </p>
+        <div className="mt-4 text-lg text-muted-foreground">
+          <span className="font-semibold text-primary">{chapters.length}</span> chapters available
+        </div>
       </div>
       
       <div className="grid gap-6 lg:gap-8">

@@ -1,7 +1,6 @@
-// src/app/chapters/[slug]/page.tsx
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { cosmic, getBookDetails, getSiteSettings } from '@/lib/cosmic'
+import { cosmic, getBookDetails, getSiteSettings, getAllChaptersForStaticGeneration } from '@/lib/cosmic'
 import { ChapterReader } from '@/components/ChapterReader'
 import { ChapterNavigation } from '@/components/ChapterNavigation'
 import { SocialShare } from '@/components/SocialShare'
@@ -142,11 +141,10 @@ export default async function ChapterPage({ params }: PageProps) {
 
 export async function generateStaticParams() {
   try {
-    const response = await cosmic.objects.find({
-      type: 'chapters'
-    }).props(['slug'])
+    // Use the new function to fetch all chapters for static generation
+    const chapters = await getAllChaptersForStaticGeneration()
 
-    return response.objects.map((chapter: Chapter) => ({
+    return chapters.map((chapter: Chapter) => ({
       slug: chapter.slug
     }))
   } catch (error) {

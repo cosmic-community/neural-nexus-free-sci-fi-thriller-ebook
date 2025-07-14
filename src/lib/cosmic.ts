@@ -138,6 +138,7 @@ export async function getBookDetails(): Promise<BookDetails | null> {
 
 export async function getChapters(): Promise<Chapter[]> {
   try {
+    // Remove limit parameter to fetch all chapters
     const response = await cosmic.objects.find({
       type: 'chapters',
     }).props(['id', 'title', 'slug', 'metadata']).depth(1)
@@ -178,5 +179,30 @@ export async function getChapterBySlug(slug: string): Promise<Chapter | null> {
   } catch (error) {
     console.error('Error fetching chapter:', error)
     return null
+  }
+}
+
+export async function getAllChaptersForStaticGeneration(): Promise<Chapter[]> {
+  try {
+    // Fetch all chapters without any limits for static generation
+    const response = await cosmic.objects.find({
+      type: 'chapters',
+    }).props(['id', 'title', 'slug', 'metadata']).depth(1)
+    
+    if (response.objects && response.objects.length > 0) {
+      const chapters = response.objects as Chapter[]
+      
+      // Sort chapters by chapter_number to ensure correct order
+      return chapters.sort((a, b) => {
+        const aNum = a.metadata?.chapter_number || 0
+        const bNum = b.metadata?.chapter_number || 0
+        return aNum - bNum
+      })
+    }
+    
+    return []
+  } catch (error) {
+    console.error('Error fetching chapters for static generation:', error)
+    return []
   }
 }
