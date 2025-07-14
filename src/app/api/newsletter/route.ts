@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       }
     } catch (error) {
       // If 404, email doesn't exist - continue with subscription
-      if (error.status !== 404) {
+      if (error && typeof error === 'object' && 'status' in error && error.status !== 404) {
         throw error
       }
     }
