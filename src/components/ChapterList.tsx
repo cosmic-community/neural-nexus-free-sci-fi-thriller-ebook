@@ -10,33 +10,6 @@ interface ChapterListProps {
 export function ChapterList({ chapters, siteSettings }: ChapterListProps) {
   const primaryColor = siteSettings?.metadata?.primary_color || '#00ffff'
   
-  // If no chapters are available, show a fallback message
-  if (!chapters || chapters.length === 0) {
-    return (
-      <section id="chapters" className="mb-16">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4">
-            <span className="gradient-text">Read the Story</span>
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Follow Dr. Maya Chen's journey through a world where consciousness and technology collide
-          </p>
-        </div>
-        
-        <div className="text-center py-12">
-          <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-8 border border-muted">
-            <BookOpen className="w-16 h-16 text-primary mx-auto mb-4" />
-            <h3 className="text-2xl font-bold mb-2">Coming Soon</h3>
-            <p className="text-muted-foreground">
-              The chapters are being prepared for your reading pleasure. 
-              Check back soon to start your journey into the Neural Nexus universe!
-            </p>
-          </div>
-        </div>
-      </section>
-    )
-  }
-  
   return (
     <section id="chapters" className="mb-16">
       <div className="text-center mb-12">
@@ -115,6 +88,30 @@ export function ChapterList({ chapters, siteSettings }: ChapterListProps) {
             </div>
           </Link>
         ))}
+      </div>
+      
+      {/* Reading Stats */}
+      <div className="mt-12 text-center">
+        <div className="inline-flex items-center gap-8 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4" />
+            <span>{chapters.length} chapters</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            <span>
+              {chapters.reduce((total, chapter) => {
+                const time = chapter.metadata?.reading_time || '0 min'
+                const minutes = parseInt(time.split(' ')[0]) || 0
+                return total + minutes
+              }, 0)} min total
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Volume2 className="w-4 h-4" />
+            <span>Audio enabled</span>
+          </div>
+        </div>
       </div>
     </section>
   )

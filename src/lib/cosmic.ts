@@ -1,4 +1,5 @@
 import { createBucketClient } from '@cosmicjs/sdk'
+import { demoChapters } from '@/data/chapters'
 
 // Initialize Cosmic client
 const cosmic = createBucketClient({
@@ -86,7 +87,7 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
     console.error('Error fetching site settings:', error)
     // Return default site settings if none found
     return {
-      id: '',
+      id: 'default-site-settings',
       title: 'Neural Nexus - Site Settings',
       slug: 'neural-nexus-site-settings',
       metadata: {
@@ -114,16 +115,21 @@ export async function getBookDetails(): Promise<BookDetails | null> {
     console.error('Error fetching book details:', error)
     // Return default book details if none found
     return {
-      id: '',
+      id: 'default-book-details',
       title: 'Neural Nexus - Book Details',
       slug: 'neural-nexus-book-details',
       metadata: {
         title: 'Neural Nexus',
         subtitle: 'A Sci-Fi Thriller',
-        author: 'Your Name',
+        author: 'AI Generated Story',
         description: '<p>In the year 2087, neural interfaces have revolutionized human consciousness. Dr. Maya Chen, a brilliant neuroscientist, discovers that her groundbreaking brain-computer interface technology has been secretly weaponized by the powerful Nexus Corporation.</p><p>When she attempts to expose the truth, Maya becomes the target of digital assassins who can hack human minds directly. Racing against time through a world where the line between human consciousness and artificial intelligence has been dangerously blurred, she must navigate corporate espionage, mind-hacking, and her own augmented reality to survive.</p><p>A fast-paced thriller that explores the dark side of technological advancement and the price of human enhancement.</p>',
+        cover_image: {
+          url: '/neural-nexus-cover.png',
+          imgix_url: '/neural-nexus-cover.png'
+        },
         genre: 'Sci-Fi Thriller',
-        reading_time: '2-3 hours',
+        publication_date: '2024',
+        reading_time: '20-25 minutes',
         enable_tts: true,
         default_voice: { key: 'female', value: 'Female' }
       }
@@ -137,48 +143,24 @@ export async function getChapters(): Promise<Chapter[]> {
       type: 'chapters',
     }).props(['id', 'title', 'slug', 'metadata']).depth(1).sort('metadata.chapter_number')
     
-    const chapters = response.objects as Chapter[]
+    if (response.objects && response.objects.length > 0) {
+      const chapters = response.objects as Chapter[]
+      
+      // Sort chapters by chapter_number to ensure correct order
+      return chapters.sort((a, b) => {
+        const aNum = a.metadata?.chapter_number || 0
+        const bNum = b.metadata?.chapter_number || 0
+        return aNum - bNum
+      })
+    }
     
-    // Sort chapters by chapter_number to ensure correct order
-    return chapters.sort((a, b) => {
-      const aNum = a.metadata?.chapter_number || 0
-      const bNum = b.metadata?.chapter_number || 0
-      return aNum - bNum
-    })
+    // If no chapters found in Cosmic, return demo chapters
+    return demoChapters as Chapter[]
   } catch (error) {
     console.error('Error fetching chapters:', error)
     
-    // Return demo chapters if none found in Cosmic
-    return [
-      {
-        id: 'demo-chapter-1',
-        title: 'Chapter 1: The Discovery',
-        slug: 'the-discovery',
-        metadata: {
-          chapter_number: 1,
-          chapter_title: 'The Discovery',
-          content: '<p>Dr. Maya Chen stood in her laboratory, staring at the neural interface prototype that would change everything. The soft blue glow of the quantum processors cast shadows across her face as she prepared for the most important test of her career.</p><p>"Are you ready for this?" her assistant Jake asked, nervously adjusting his glasses.</p><p>Maya nodded, her fingers trembling slightly as she reached for the neural crown. She had spent five years developing this technology, and now the moment of truth had arrived.</p><p>As the device activated, Maya felt her consciousness expand beyond the boundaries of her physical form. The digital realm opened before her like a vast ocean of data and possibility. But something was wrong—there were other presences in the network, dark shapes moving through the code like predators.</p><p>"Maya!" Jake\'s voice seemed to come from a great distance. "Your vitals are spiking!"</p><p>She tried to disconnect, but the neural interface held her fast. The shadowy figures drew closer, and Maya realized with growing horror that they weren\'t just programs—they were something else entirely.</p>',
-          word_count: 180,
-          reading_time: '2 min',
-          enable_audio: true,
-          summary: 'Dr. Maya Chen tests her revolutionary neural interface technology for the first time, but discovers something sinister lurking in the digital realm.'
-        }
-      },
-      {
-        id: 'demo-chapter-2',
-        title: 'Chapter 2: The Hunters',
-        slug: 'the-hunters',
-        metadata: {
-          chapter_number: 2,
-          chapter_title: 'The Hunters',
-          content: '<p>The emergency protocols kicked in, flooding Maya\'s system with neural stabilizers. She gasped as her consciousness snapped back to her physical body, the laboratory spinning around her.</p><p>"What happened in there?" Jake demanded, helping her to a chair.</p><p>Maya\'s hands shook as she removed the neural crown. "There were... things. In the network. They were hunting."</p><p>Before Jake could respond, the laboratory\'s security system activated. Red lights flashed as automated locks sealed the exits.</p><p>"Dr. Chen," a cold voice echoed through the speakers, "you have accessed restricted neural pathways. Please remain calm while we verify your clearance."</p><p>Maya\'s blood turned to ice. That voice belonged to Marcus Sterling, the CEO of Nexus Corporation—her former employer and the man who had tried to steal her research.</p><p>"How did you get into my system?" she whispered.</p><p>"The same way we\'ve been watching you for months," Sterling replied. "Your neural interface is more valuable than you realize, Maya. And now it belongs to us."</p>',
-          word_count: 195,
-          reading_time: '2 min',
-          enable_audio: true,
-          summary: 'Maya discovers that her neural interface has been compromised by the Nexus Corporation, led by her former employer Marcus Sterling.'
-        }
-      }
-    ]
+    // Return demo chapters if error occurs
+    return demoChapters as Chapter[]
   }
 }
 
@@ -189,12 +171,18 @@ export async function getChapterBySlug(slug: string): Promise<Chapter | null> {
       slug: slug,
     }).props(['id', 'title', 'slug', 'metadata']).depth(1)
     
-    return response.object as Chapter
+    if (response.object) {
+      return response.object as Chapter
+    }
+    
+    // If not found in Cosmic, check demo chapters
+    const demoChapter = demoChapters.find(chapter => chapter.slug === slug)
+    return demoChapter as Chapter || null
   } catch (error) {
     console.error('Error fetching chapter:', error)
     
-    // Return demo chapter if not found in Cosmic
-    const demoChapters = await getChapters()
-    return demoChapters.find(chapter => chapter.slug === slug) || null
+    // Return demo chapter if error occurs
+    const demoChapter = demoChapters.find(chapter => chapter.slug === slug)
+    return demoChapter as Chapter || null
   }
 }
